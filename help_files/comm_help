@@ -1,0 +1,7 @@
+comm : Compares two sorted files line by line. With no options, produce three-column output. Column one contains lines unique to FILE1, column two contains lines unique to FILE2, and column three contains lines common to both files.
+Command Format - comm [OPTIONS] FILE1 FILE2
+FILE1 - Name of the file 1
+FILE2 - Name of the file 2
+-c : check that the input is correctly sorted, even if all input lines are pairable
+-d : do not check that the input is correctly sorted
+-help : Brief information about supported options

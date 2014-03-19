@@ -1,0 +1,16 @@
+Usage: uniq [OPTION]... [INPUT [OUTPUT]]
+Filter adjacent matching lines from INPUT (or standard input),
+writing to OUTPUT (or standard output).
+
+With no options, matching lines are merged to the first occurrence.
+
+Mandatory arguments to long options are mandatory for short options too.
+  -f, N   avoid comparing the first N fields
+  -i,     ignore differences in case when comparing
+  -help   display this help and exit
+
+A field is a run of blanks (usually spaces and/or TABs), then non-blank
+characters.  Fields are skipped before chars.
+
+Note: 'uniq' does not detect repeated lines unless they are adjacent.
+You may want to sort the input first, or use `sort -u' without `uniq'.

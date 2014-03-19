@@ -1,0 +1,14 @@
+Usage: grep [OPTION]... PATTERN [FILE]...
+Search for PATTERN in each FILE or standard input.
+
+Miscellaneous:
+  -v, --invert-match        select non-matching lines
+
+Output control:
+  -o, --only-matching       show only the part of a line matching PATTERN
+  -c, --count               print only a count of matching lines per FILE
+  
+Context control:
+  -A NUM, --after-context=NUM   print NUM lines of trailing context
+  -B NUM, --before-context=NUM  print NUM lines of leading context
+  -C NUM, --context=NUM         print NUM lines of output context

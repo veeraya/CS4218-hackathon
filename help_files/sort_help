@@ -1,0 +1,5 @@
+sort : sort lines of text files
+Command Format - sort [OPTIONS] [FILE]
+FILE - Name of the file
+-c : Check whether the given file is already sorted, if it is not all sorted, print a diagnostic containing the first line that is out of order
+-help : Brief information about supported options

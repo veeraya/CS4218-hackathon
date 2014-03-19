@@ -1,0 +1,4 @@
+bin/sg
+*.class
+/*.class
+/bin
