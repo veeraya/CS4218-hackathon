@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 import org.junit.After;
 import org.junit.Before;
@@ -16,14 +17,18 @@ import sg.edu.nus.comp.cs4218.fileutils.IMoveTool;
 public class OurMOVEToolTest {
 
 	private IMoveTool movetool;	
-	
+	private ArrayList<File> files;
 	@Before
 	public void setUp() throws Exception {
+		files = new ArrayList<File>();
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		movetool = null;
+		for(int i = 0; i < files.size(); i ++){
+			Files.delete(files.get(i).toPath());
+		}
 	}
 
 	/**
@@ -37,12 +42,12 @@ public class OurMOVEToolTest {
 		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
 		assertTrue(movetool.move(tempFile, tempFolder));
 		File movedFile = new File(tempFolder, tempFile.getName());
-		assertTrue(!tempFile.exists());
+		assertFalse(tempFile.exists());
 		assertTrue(movedFile.exists());
-		Files.delete(movedFile.toPath());
-		Files.delete(tempFolder.toPath());
+		files.add(movedFile);
+		files.add(tempFolder);
 	}
-	
+
 	/**
 	 * Test error handling
 	 * Moving of a non-existing file to a directory
@@ -51,9 +56,9 @@ public class OurMOVEToolTest {
 	public void moveInvalidFileTest() throws IOException{
 		movetool = new MoveTool(new String[]{});
 		File tempFolder = Files.createTempDirectory("tempFolder").toFile();
-		File tempFile = null;
+		File tempFile = new File(tempFolder.getParent(), "some random file.tmp");
 		assertFalse(movetool.move(tempFile, tempFolder));
-		Files.delete(tempFolder.toPath());
+		files.add(tempFolder);
 	}
 
 	/**
@@ -62,12 +67,11 @@ public class OurMOVEToolTest {
 	 */
 	@Test
 	public void executeInvalidWorkingDirTest() {
-		movetool = new MoveTool(new String[]{});
-		String result = movetool.execute(null, null);
+		movetool = new MoveTool(new String[]{"hello","world"});
+		movetool.execute(null, null);
 		assertEquals(1, movetool.getStatusCode());
-		assertEquals("Error: Cannot find working directory", result);
 	}
-	
+
 	/**
 	 * Test expected behavior
 	 * Move file into sub-directory of the same parent folder
@@ -78,14 +82,13 @@ public class OurMOVEToolTest {
 		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
 		String tempName = tempFile.getName() + " " + tempFolder.getName();
 		movetool = new MoveTool(tempName.split(" "));
-		String msg = movetool.execute(tempFile.getParentFile(), null);
+		movetool.execute(tempFile.getParentFile(), null);
 		File movedFile = new File(tempFolder, tempFile.getName());
 		assertTrue(movedFile.exists());
 		assertTrue(!tempFile.exists());
-		assertTrue(msg.equals(""));
 		assertEquals(movetool.getStatusCode(),0);
-		Files.delete(movedFile.toPath());
-		Files.delete(tempFolder.toPath());
+		files.add(movedFile);
+		files.add(tempFolder);
 	}
 
 	/**
@@ -99,15 +102,14 @@ public class OurMOVEToolTest {
 		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
 		File dirName = new File(System.getProperty("user.home"));
 		movetool = new MoveTool(new String[]{tempFile.getName(), dirName.getAbsolutePath()});
-		String msg = movetool.execute(tempFile.getParentFile(), tempFile.getName() + " " + dirName);
+		movetool.execute(tempFile.getParentFile(), tempFile.getName() + " " + dirName);
 		File movedFile = new File(dirName, tempFile.getName());
 		assertTrue(movedFile.exists());
 		assertTrue(!tempFile.exists());
-		assertTrue(msg.equals(""));
 		assertEquals(movetool.getStatusCode(),0);
-		Files.delete(movedFile.toPath());
+		files.add(movedFile);
 	}
-	
+
 	/**
 	 * Test expected behavior
 	 * Moving file into folder.
@@ -122,17 +124,16 @@ public class OurMOVEToolTest {
 		Path tempFileFrom = Files.createFile(new File(fromDirPath.toFile(), "temp File.tmp").toPath());
 		String arg = tempFileFrom + " " + toDirPath;
 		movetool = new MoveTool(arg.split(" "));
-		String msg = movetool.execute(tempWorkingDir, null);
+		movetool.execute(tempWorkingDir, null);
 		File movedFile = new File(toDirPath.toFile(), "temp File.tmp");
 		assertTrue(movedFile.exists());
 		assertTrue(!tempFileFrom.toFile().exists());
-		assertTrue(msg.equals(""));
 		assertEquals(movetool.getStatusCode(),0);
-		Files.delete(movedFile.toPath());
-		Files.delete(toDirPath);
-		Files.delete(fromDirPath);
+		files.add(movedFile);
+		files.add(toDirPath.toFile());
+		files.add(fromDirPath.toFile());
 	}
-	
+
 	/**
 	 * Test expected behavior
 	 * Move a file in a folder to the parent directory of the folder
@@ -142,16 +143,15 @@ public class OurMOVEToolTest {
 		File tempFolder = Files.createTempDirectory("tempFolder").toFile();
 		File tempFile = Files.createFile(new File(tempFolder, "tempFile.tmp").toPath()).toFile();
 		movetool = new MoveTool(new String[]{tempFile.getName(),".."});
-		String msg = movetool.execute(tempFile.getParentFile(), null);
+		movetool.execute(tempFile.getParentFile(), null);
 		File movedFile = new File(tempFolder.getParentFile(), tempFile.getName());
 		assertTrue(movedFile.exists());
 		assertTrue(!tempFile.exists());
-		assertTrue(msg.equals(""));
 		assertEquals(movetool.getStatusCode(),0);
-		Files.delete(movedFile.toPath());
-		Files.delete(tempFolder.toPath());
+		files.add(movedFile);
+		files.add(tempFolder);
 	}
-	
+
 	/**
 	 * Test error handling
 	 * No parameter being entered
@@ -160,11 +160,10 @@ public class OurMOVEToolTest {
 	public void executeNoParameterTest() throws IOException {
 		File tempWorkingDir = new File(System.getProperty("java.io.tmpdir"));
 		movetool = new MoveTool(new String[]{});
-		String msg = movetool.execute(tempWorkingDir, null);
-		assertEquals(movetool.getStatusCode(),1);
-		assertTrue(msg.equals("Error: Missing parameter for SOURCE DEST"));
+		movetool.execute(tempWorkingDir, null);
+		assertEquals(movetool.getStatusCode(),-1);
 	}
-	
+
 	/**
 	 * Test error handling
 	 * Missing parameter for [DEST]
@@ -173,12 +172,11 @@ public class OurMOVEToolTest {
 	public void executeOneParameterTest() throws IOException {
 		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
 		movetool = new MoveTool(new String[]{tempFile.getPath()});
-		String msg = movetool.execute(tempFile.getParentFile(), null);
+		movetool.execute(tempFile.getParentFile(), null);
 		assertEquals(movetool.getStatusCode(),1);
-		assertTrue(msg.equals("Error: Missing parameter for DEST"));
-		Files.delete(tempFile.toPath());
+		files.add(tempFile);
 	}
-	
+
 	/**
 	 * Test error handling
 	 * Extra parameter found argument
@@ -192,17 +190,16 @@ public class OurMOVEToolTest {
 		Path tempFileFrom = Files.createFile(new File(fromDirPath.toFile(), "temp File.tmp").toPath());
 		String arg = tempFileFrom + " " + toDirPath + " ExtraParamter";
 		movetool = new MoveTool(arg.split(" "));
-		String msg = movetool.execute(tempWorkingDir, null);
-		assertTrue(msg.equals("Error: Extra parameter found in DEST"));
+		movetool.execute(tempWorkingDir, null);
 		assertEquals(movetool.getStatusCode(),1);
 		assertTrue(tempFileFrom.toFile().exists());
 		File movedFile = new File(toDirPath.toString() + "\\" + tempFileFrom.getFileName().toString());
 		assertTrue(!movedFile.exists());
-		Files.delete(toDirPath);
-		Files.delete(tempFileFrom);
-		Files.delete(fromDirPath);
+		files.add(toDirPath.toFile());
+		files.add(tempFileFrom.toFile());
+		files.add(fromDirPath.toFile());
 	}
-	
+
 	/**
 	 * Test error handling
 	 * File for source does not exist.
@@ -212,11 +209,10 @@ public class OurMOVEToolTest {
 		File tempFolder = Files.createTempDirectory("tempFolder").toFile();
 		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
 		movetool = new MoveTool(new String[]{"tempFile.tmp", tempFolder.getPath()});
-		String msg = movetool.execute(tempFile.getParentFile(), null);
-		assertTrue(msg.equals("Error: SOURCE file not found"));
+		movetool.execute(tempFile.getParentFile(), null);
 		assertEquals(movetool.getStatusCode(),1);
-		Files.delete(tempFolder.toPath());
-		Files.delete(tempFile.toPath());
+		files.add(tempFolder);
+		files.add(tempFile);
 	}
 
 	/**
@@ -227,10 +223,9 @@ public class OurMOVEToolTest {
 	public void executeInvalidDestNameTest() throws IOException {
 		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
 		movetool = new MoveTool(new String[]{tempFile.getName(), "Invalid Dest Folder"});
-		String msg = movetool.execute(tempFile.getParentFile(), null);
-		assertTrue(msg.equals("Error: DEST directory not found"));
+		movetool.execute(tempFile.getParentFile(), null);
 		assertEquals(movetool.getStatusCode(),1);
-		Files.delete(tempFile.toPath());
+		files.add(tempFile);
 	}
 
 	/**
@@ -242,13 +237,12 @@ public class OurMOVEToolTest {
 		File tempFolder1 = Files.createTempDirectory("tempFolder").toFile();
 		File tempFolder2 = Files.createTempDirectory("tempFolder").toFile();
 		movetool = new MoveTool(new String[]{tempFolder1.getName(),tempFolder2.getName()});
-		String msg = movetool.execute(tempFolder1.getParentFile(), null);
-		assertTrue(msg.equals("Error: SOURCE is not a file"));
+		movetool.execute(tempFolder1.getParentFile(), null);
 		assertEquals(movetool.getStatusCode(),1);
-		Files.delete(tempFolder1.toPath());
-		Files.delete(tempFolder2.toPath());
+		files.add(tempFolder1);
+		files.add(tempFolder2);
 	}
-	
+
 
 	/**
 	 * Test error handling
@@ -259,13 +253,12 @@ public class OurMOVEToolTest {
 		File tempFile1 = Files.createTempFile("tempFile", ".tmp").toFile();
 		File tempFile2 = Files.createTempFile("tempFile", ".tmp").toFile();
 		movetool = new MoveTool(new String[]{tempFile1.getName(),tempFile2.getName()});
-		String msg = movetool.execute(tempFile1.getParentFile(), null);
-		assertTrue(msg.equals("Error: DEST is not a directory"));
+		movetool.execute(tempFile1.getParentFile(), null);
 		assertEquals(movetool.getStatusCode(),1);
-		Files.delete(tempFile1.toPath());
-		Files.delete(tempFile2.toPath());
+		files.add(tempFile1);
+		files.add(tempFile2);
 	}
-	
+
 	/**
 	 * Test error handling
 	 * File already existed before moving to directory
@@ -280,13 +273,50 @@ public class OurMOVEToolTest {
 		assertTrue(copiedFile.exists());
 		assertTrue(tempFile.exists());
 		movetool = new MoveTool(tempName.split(" "));
-		String msg = movetool.execute(tempFile.getParentFile(), null);
-		assertTrue(msg.equals("Error: A file with the same name exists in the directory"));
+		movetool.execute(tempFile.getParentFile(), null);
 		assertEquals(movetool.getStatusCode(),1);
 		assertTrue(tempFile.exists());
-		Files.delete(tempFile.toPath());
-		Files.delete(copiedFile.toPath());
-		Files.delete(tempFolder.toPath());
+		files.add(tempFile);
+		files.add(copiedFile);
+		files.add(tempFolder);
+	}
+
+	/**
+	 * Test expected
+	 * Directory name contains space
+	 */
+	@Test
+	public void executeDirHasSpaceTest() throws IOException {
+		File tempFolder = Files.createTempDirectory("temp Folder").toFile();
+		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
+		String tempName = tempFile.getName() + " " + tempFolder.getName();
+		File copiedFile = new File(tempFolder.toString() + "\\" + tempFile.getName());
+		movetool = new MoveTool(tempName.split(" "));
+		movetool.execute(tempFile.getParentFile(), null);
+		assertEquals(movetool.getStatusCode(),0);
+		assertTrue(tempFile.exists());
+		files.add(tempFile);
+		files.add(copiedFile);
+		files.add(tempFolder);
+	}
+	
+	/**
+	 * Test expected
+	 * File name contains space
+	 */
+	@Test
+	public void executeFileHasSpaceTest() throws IOException {
+		File tempFolder = Files.createTempDirectory("tempFolder").toFile();
+		File tempFile = Files.createTempFile("temp File", ".tmp").toFile();
+		String tempName = tempFile.getName() + " " + tempFolder.getName();
+		File copiedFile = new File(tempFolder.toString() + "\\" + tempFile.getName());
+		movetool = new MoveTool(tempName.split(" "));
+		movetool.execute(tempFile.getParentFile(), null);
+		assertEquals(movetool.getStatusCode(),0);
+		assertTrue(tempFile.exists());
+		files.add(tempFile);
+		files.add(copiedFile);
+		files.add(tempFolder);
 	}
 	
 	/**
@@ -300,7 +330,8 @@ public class OurMOVEToolTest {
 		movetool = new MoveTool(new String[]{"tempFile.tmp", "..\\"+tempFolder.getName()});
 		movetool.execute(tempFile.getParentFile(), null);
 		assertTrue(new File(tempFolder, "tempFile.tmp").exists());
-		Files.delete(tempFile.toPath());
-		Files.delete(tempFolder.toPath());
+		assertEquals(0, movetool.getStatusCode());
+		files.add(tempFile);
+		files.add(tempFolder);
 	}
 }

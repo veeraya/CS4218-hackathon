@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 import org.junit.After;
 import org.junit.Before;
@@ -16,14 +17,19 @@ import sg.edu.nus.comp.cs4218.fileutils.ICopyTool;
 public class OurCOPYToolTest {
 
 	private ICopyTool copytool;
+	private ArrayList<File> files;
 	
 	@Before
 	public void setUp() throws Exception {
+		files = new ArrayList<File>();
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		copytool = null;
+		for(int i = 0; i < files.size(); i ++){
+			Files.delete(files.get(i).toPath());
+		}
 	}
 	
 	/**
@@ -37,10 +43,10 @@ public class OurCOPYToolTest {
 		copytool = new CopyTool(new String[]{});
 		assertTrue(copytool.copy(tempFile, tempFolder));
 		File copiedFile = new File(tempFolder, tempFile.getName());
+		files.add(tempFile);
+		files.add(copiedFile);
+		files.add(tempFolder);
 		assertTrue(copiedFile.exists());
-		Files.delete(tempFile.toPath());
-		Files.delete(copiedFile.toPath());
-		Files.delete(tempFolder.toPath());
 	}
 	
 	/**
@@ -54,22 +60,26 @@ public class OurCOPYToolTest {
 		copytool = new CopyTool(new String[]{});
 		assertTrue(copytool.copy(tempFile, tempFolder));
 		File copiedFile = new File(tempFolder, tempFile.getName());
+		files.add(tempFile);
+		files.add(copiedFile);
+		files.add(tempFolder);
 		assertFalse(copytool.copy(tempFile, tempFolder));
-		Files.delete(tempFile.toPath());
-		Files.delete(copiedFile.toPath());
-		Files.delete(tempFolder.toPath());
 	}
 	
 	/**
 	 * Test error handling
 	 * Invalid working directory
+	 * @throws IOException 
 	 */
 	@Test
-	public void executeInvalidWorkingDirTest() {
-		copytool = new CopyTool(new String[]{});
-		String result = copytool.execute(null, null);
+	public void executeInvalidWorkingDirTest() throws IOException {
+		File tempFolder = Files.createTempDirectory("tempFolder").toFile();
+		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
+		copytool = new CopyTool(new String[]{tempFile.getName(),tempFolder.getName()});
+		copytool.execute(null, null);files.add(tempFile);
+		files.add(tempFile);
+		files.add(tempFolder);
 		assertEquals(1, copytool.getStatusCode());
-		assertEquals("Error: Cannot find working directory", result);
 	}
 	
 	/**
@@ -82,14 +92,13 @@ public class OurCOPYToolTest {
 		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
 		String tempName = tempFile.getName() + " " + tempFolder.getName();
 		copytool = new CopyTool(tempName.split(" "));
-		String msg = copytool.execute(tempFile.getParentFile(), tempName);
+		copytool.execute(tempFile.getParentFile(), tempName);
 		File copiedFile = new File(tempFolder, tempFile.getName());
 		assertTrue(copiedFile.exists());
-		assertTrue(msg.equals(""));
+		files.add(tempFile);
+		files.add(copiedFile);
+		files.add(tempFolder);
 		assertEquals(copytool.getStatusCode(),0);
-		Files.delete(tempFile.toPath());
-		Files.delete(copiedFile.toPath());
-		Files.delete(tempFolder.toPath());
 	}
 
 	/**
@@ -101,13 +110,12 @@ public class OurCOPYToolTest {
 		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
 		File dirName = new File(System.getProperty("user.home"));
 		copytool = new CopyTool(new String[]{tempFile.getName(),dirName.getAbsolutePath()});
-		String msg = copytool.execute(tempFile.getParentFile(), null);
+		copytool.execute(tempFile.getParentFile(), null);
 		File copiedFile = new File(dirName, tempFile.getName());
 		assertTrue(copiedFile.exists());
-		assertTrue(msg.equals(""));
+		files.add(copiedFile);
+		files.add(tempFile);
 		assertEquals(copytool.getStatusCode(),0);
-		Files.delete(copiedFile.toPath());
-		Files.delete(tempFile.toPath());
 	}
 	
 	/**
@@ -124,15 +132,14 @@ public class OurCOPYToolTest {
 		Path tempFileFrom = Files.createFile(new File(fromDirPath.toFile(), "temp File.tmp").toPath());
 		String arg = tempFileFrom + " " + toDirPath;
 		copytool = new CopyTool(arg.split(" "));
-		String msg = copytool.execute(tempWorkingDir, null);
+		copytool.execute(tempWorkingDir, null);
 		File copiedFile = new File(toDirPath.toFile(), "temp File.tmp");
 		assertTrue(copiedFile.exists());
-		assertTrue(msg.equals(""));
+		files.add(copiedFile);
+		files.add(toDirPath.toFile());
+		files.add(tempFileFrom.toFile());
+		files.add(fromDirPath.toFile());
 		assertEquals(copytool.getStatusCode(),0);
-		Files.delete(copiedFile.toPath());
-		Files.delete(toDirPath);
-		Files.delete(tempFileFrom);
-		Files.delete(fromDirPath);
 	}
 	
 	/**
@@ -144,14 +151,13 @@ public class OurCOPYToolTest {
 		File tempFolder = Files.createTempDirectory("tempFolder").toFile();
 		File tempFile = Files.createFile(new File(tempFolder, "tempFile.tmp").toPath()).toFile();
 		copytool = new CopyTool(new String[]{tempFile.getName(),".."});
-		String msg = copytool.execute(tempFile.getParentFile(), null);
+		copytool.execute(tempFile.getParentFile(), null);
 		File copiedFile = new File(tempFolder.getParentFile(), tempFile.getName());
 		assertTrue(copiedFile.exists());
-		assertTrue(msg.equals(""));
+		files.add(copiedFile);
+		files.add(tempFile);
+		files.add(tempFolder);
 		assertEquals(copytool.getStatusCode(),0);
-		Files.delete(copiedFile.toPath());
-		Files.delete(tempFile.toPath());
-		Files.delete(tempFolder.toPath());
 	}
 	
 	/**
@@ -162,10 +168,8 @@ public class OurCOPYToolTest {
 	public void executeNoParameterTest() throws IOException {
 		File tempWorkingDir = new File(System.getProperty("java.io.tmpdir"));
 		copytool = new CopyTool(new String[]{});
-		String msg = copytool.execute(tempWorkingDir, null);
-		assertTrue(copytool.getStatusCode() != 0);
-		assertTrue(msg.equals("Error: Missing parameter for SOURCE DEST"));
-		assertEquals(copytool.getStatusCode(),1);
+		copytool.execute(tempWorkingDir, null);
+		assertEquals(copytool.getStatusCode(),-1);
 	}
 	
 	/**
@@ -176,11 +180,9 @@ public class OurCOPYToolTest {
 	public void executeOneParameterTest() throws IOException {
 		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
 		copytool = new CopyTool(new String[]{tempFile.getName()});
-		String msg = copytool.execute(tempFile.getParentFile(), null);
-		assertTrue(copytool.getStatusCode() != 0);
-		assertTrue(msg.equals("Error: Missing parameter for DEST"));
-		assertEquals(copytool.getStatusCode(),1);
-		Files.delete(tempFile.toPath());
+		copytool.execute(tempFile.getParentFile(), null);
+		files.add(tempFile);
+		assertEquals(copytool.getStatusCode(),-2);
 	}
 	
 	/**
@@ -196,12 +198,11 @@ public class OurCOPYToolTest {
 		Path tempFileFrom = Files.createFile(new File(fromDirPath.toFile(), "temp File.tmp").toPath());
 		String arg = tempFileFrom + " " + toDirPath + " ExtraParamter";
 		copytool = new CopyTool(arg.split(" "));
-		String msg = copytool.execute(tempWorkingDir, null);
-		assertTrue(msg.equals("Error: Extra parameter found in DEST"));
+		copytool.execute(tempWorkingDir, null);
+		files.add(toDirPath.toFile());
+		files.add(tempFileFrom.toFile());
+		files.add(fromDirPath.toFile());
 		assertEquals(copytool.getStatusCode(),1);
-		Files.delete(toDirPath);
-		Files.delete(tempFileFrom);
-		Files.delete(fromDirPath);
 	}
 	
 	/**
@@ -213,11 +214,10 @@ public class OurCOPYToolTest {
 		File tempFolder = Files.createTempDirectory("tempFolder").toFile();
 		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
 		copytool = new CopyTool(new String[]{"tempFile.tmp", tempFolder.getName()});
-		String msg = copytool.execute(tempFile.getParentFile(), null);
-		assertTrue(msg.equals("Error: SOURCE file not found"));
+		copytool.execute(tempFile.getParentFile(), null);
+		files.add(tempFolder);
+		files.add(tempFile);
 		assertEquals(copytool.getStatusCode(),1);
-		Files.delete(tempFolder.toPath());
-		Files.delete(tempFile.toPath());
 	}
 	
 	/**
@@ -228,10 +228,9 @@ public class OurCOPYToolTest {
 	public void executeInvalidDestNameTest() throws IOException {
 		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
 		copytool = new CopyTool(new String[]{tempFile.getName(),  "Invalid Dest Folder"});
-		String msg = copytool.execute(tempFile.getParentFile(), null);
-		assertTrue(msg.equals("Error: DEST directory not found"));
-		assertEquals(copytool.getStatusCode(),1);
-		Files.delete(tempFile.toPath());
+		copytool.execute(tempFile.getParentFile(), null);
+		files.add(tempFile);
+		assertEquals(copytool.getStatusCode(),2);
 	}
 	
 	/**
@@ -243,11 +242,10 @@ public class OurCOPYToolTest {
 		File tempFolder1 = Files.createTempDirectory("tempFolder").toFile();
 		File tempFolder2 = Files.createTempDirectory("tempFolder").toFile();
 		copytool = new CopyTool(new String[]{tempFolder1.getName(),  tempFolder2.getName()});
-		String msg = copytool.execute(tempFolder1.getParentFile(), null);
-		assertTrue(msg.equals("Error: SOURCE is not a file"));
+		copytool.execute(tempFolder1.getParentFile(), null);
+		files.add(tempFolder1);
+		files.add(tempFolder2);
 		assertEquals(copytool.getStatusCode(),1);
-		Files.delete(tempFolder1.toPath());
-		Files.delete(tempFolder2.toPath());
 	}
 	
 	/**
@@ -259,11 +257,10 @@ public class OurCOPYToolTest {
 		File tempFile1 = Files.createTempFile("tempFile", ".tmp").toFile();
 		File tempFile2 = Files.createTempFile("tempFile", ".tmp").toFile();
 		copytool = new CopyTool(new String[]{tempFile1.getName(),  tempFile2.getName()});
-		String msg = copytool.execute(tempFile1.getParentFile(), null);
-		assertTrue(msg.equals("Error: DEST is not a directory"));
-		assertEquals(copytool.getStatusCode(),1);
-		Files.delete(tempFile1.toPath());
-		Files.delete(tempFile2.toPath());
+		copytool.execute(tempFile1.getParentFile(), null);
+		files.add(tempFile1);
+		files.add(tempFile2);
+		assertEquals(copytool.getStatusCode(),-4);
 	}
 	
 	/**
@@ -279,12 +276,11 @@ public class OurCOPYToolTest {
 		copytool.execute(tempFile.getParentFile(), null);
 		File copiedFile = new File(tempFolder, tempFile.getName());
 		assertTrue(copiedFile.exists());
-		String msg = copytool.execute(tempFile.getParentFile(), null);
-		assertTrue(msg.equals("Error: A file with the same name exists in the directory"));
-		assertEquals(copytool.getStatusCode(),1);
-		Files.delete(copiedFile.toPath());
-		Files.delete(tempFolder.toPath());
-		Files.delete(tempFile.toPath());
+		copytool.execute(tempFile.getParentFile(), null);
+		files.add(copiedFile);
+		files.add(tempFolder);
+		files.add(tempFile);
+		assertEquals(copytool.getStatusCode(),2);
 	}
 	
 	/*
@@ -298,7 +294,8 @@ public class OurCOPYToolTest {
 		copytool = new CopyTool(new String[]{"tempFile.tmp", "..\\" + tempFolder.getName()});
 		copytool.execute(tempFile.getParentFile(), null);
 		assertTrue(new File(tempFolder, "tempFile.tmp").exists());
-		Files.delete(tempFile.toPath());
-		Files.delete(tempFolder.toPath());
+		files.add(tempFile);
+		files.add(tempFolder);
+		assertEquals(copytool.getStatusCode(),0);
 	}
 }
