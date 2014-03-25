@@ -13,7 +13,7 @@ import sg.edu.nus.comp.cs4218.impl.extended2.*;
  */
 @RunWith(Suite.class)
 @SuiteClasses({OurShellTest.class,OurCATToolTest.class, OurCDToolTest.class, OurCOPYToolTest.class, OurDELETEToolTest.class, 
-	OurECHOToolTest.class, OurLSToolTest.class, OurMOVEToolTest.class, OurPWDToolTest.class, OurCOMMToolTest.class,
+	OurMOVEToolTest.class, OurCOMMToolTest.class,
 	OurCUTToolTest.class, OurPASTEToolTest.class, OurSORTToolTest.class, OurUNIQToolTest.class, OurWCToolTest.class,
 	OurPIPINGToolTest.class, OurGREPToolTest.class, ShellIntegrationTest.class, 
 	ShellMoreIntegrationTest.class, ShellFunctionalIntegrationTest.class, ShellErrorIntegrationTest.class})
