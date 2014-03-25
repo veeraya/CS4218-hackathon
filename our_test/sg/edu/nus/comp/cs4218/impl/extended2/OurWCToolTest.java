@@ -31,17 +31,6 @@ public class OurWCToolTest {
 	
 	/**
 	 * Test expected behavior
-	 * Get number of character count from a string
-	 */
-	@Test 
-	public void getCharacterCountTest(){
-		wctool = new WcTool(new String[]{});
-		String count = wctool.getCharacterCount(testString);
-		assertEquals(count,"45");
-	}
-	
-	/**
-	 * Test expected behavior
 	 * Get number of word count from a string
 	 */
 	@Test 
@@ -64,36 +53,6 @@ public class OurWCToolTest {
 	
 	/**
 	 * Test expected behavior
-	 * Get number of character count from a string by parsing -m as an option in the command
-	 */
-	@Test 
-	public void executeCharacterOptionTest() throws IOException{
-		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
-		File tempWorkingDir = new File(System.getProperty("java.io.tmpdir"));
-		Files.write(tempFile.toPath(), testString.getBytes(),  StandardOpenOption.CREATE);
-		wctool = new WcTool(new String[]{"-m",tempFile.getAbsolutePath()});
-		String msg = wctool.execute(tempWorkingDir, null);
-		assertEquals("45\t"+tempFile.getName(), msg);
-		Files.delete(tempFile.toPath());
-	}
-	
-	/**
-	 * Test expected behavior
-	 * Get number of word count from a string by parsing -w as an option in the command
-	 */
-	@Test 
-	public void executeWordOptionTest() throws IOException{
-		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
-		File tempWorkingDir = new File(System.getProperty("java.io.tmpdir"));
-		Files.write(tempFile.toPath(), testString.getBytes(),  StandardOpenOption.CREATE);
-		wctool = new WcTool(new String[]{"-w",tempFile.getAbsolutePath()});
-		String msg = wctool.execute(tempWorkingDir, null);
-		assertEquals("9\t"+tempFile.getName(), msg);
-		Files.delete(tempFile.toPath());
-	}
-	
-	/**
-	 * Test expected behavior
 	 * Get number of new line count from a string by parsing -l as an option in the command
 	 */
 	@Test 
@@ -104,51 +63,6 @@ public class OurWCToolTest {
 		wctool = new WcTool(new String[]{"-l",tempFile.getAbsolutePath()});
 		String msg = wctool.execute(tempWorkingDir, null);
 		assertEquals("1\t"+tempFile.getName(), msg);
-		Files.delete(tempFile.toPath());
-	}
-	
-	/**
-	 * Test expected behavior
-	 * Get number of newline and word count from a string by parsing -l and -w as options in the command
-	 */
-	@Test 
-	public void executeTwoOptionsTest() throws IOException{
-		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
-		File tempWorkingDir = new File(System.getProperty("java.io.tmpdir"));
-		Files.write(tempFile.toPath(), testString.getBytes(),  StandardOpenOption.CREATE);
-		wctool = new WcTool(new String[]{"-l","-w",tempFile.getAbsolutePath()});
-		String msg = wctool.execute(tempWorkingDir, null);
-		assertEquals("1\t9\t"+tempFile.getName(), msg);
-		Files.delete(tempFile.toPath());
-	}
-	
-	/**
-	 * Test expected behavior
-	 * Get number of newline, word and character count from a string when there's no option
-	 */
-	@Test 
-	public void executeNoOptionsTest() throws IOException{
-		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
-		File tempWorkingDir = new File(System.getProperty("java.io.tmpdir"));
-		Files.write(tempFile.toPath(), testString.getBytes(),  StandardOpenOption.CREATE);
-		wctool = new WcTool(new String[]{tempFile.getAbsolutePath()});
-		String msg = wctool.execute(tempWorkingDir, null);
-		assertEquals("1\t9\t45\t"+tempFile.getName(), msg);
-		Files.delete(tempFile.toPath());
-	}
-	
-	/**
-	 * Test expected behavior
-	 * Get number of newline, word and character count from a file when there's no option
-	 */
-	@Test 
-	public void executeFileNameTest() throws IOException{
-		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
-		File tempWorkingDir = new File(System.getProperty("java.io.tmpdir"));
-		Files.write(tempFile.toPath(), testString.getBytes(),  StandardOpenOption.CREATE);
-		wctool = new WcTool(new String[]{tempFile.getName()});
-		String msg = wctool.execute(tempWorkingDir, null);
-		assertEquals("1\t9\t45\t"+tempFile.getName(), msg);
 		Files.delete(tempFile.toPath());
 	}
 	
@@ -219,21 +133,6 @@ public class OurWCToolTest {
         assertEquals(helpText, wctool.execute(tempWorkingDir, null));
     }
 	
-	/**
-	 * Test expected behavior
-	 * Get error message when there's an invalid source name
-	 */
-	@Test
-	public void executeInvalidSourceNameTest() throws IOException {
-		File tempFile = Files.createTempFile("temp File", ".tmp").toFile();
-		Files.write(tempFile.toPath(), testString.getBytes(),  StandardOpenOption.CREATE);
-		File tempWorkingDir = new File(System.getProperty("java.io.tmpdir"));
-		wctool = new WcTool(new String[]{"tempFile.tmp" , "test"});
-		String msg = wctool.execute(tempWorkingDir, null);
-		assertEquals("Error: SOURCE file not found", msg);
-		assertTrue(wctool.getStatusCode() != 0);
-		Files.delete(tempFile.toPath());
-	}
 
 
 }

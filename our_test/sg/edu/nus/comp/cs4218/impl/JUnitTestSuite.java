@@ -12,7 +12,7 @@ import sg.edu.nus.comp.cs4218.impl.extended2.*;
  *Test suite to run all unit and integration test
  */
 @RunWith(Suite.class)
-@SuiteClasses({OurShellTest.class,OurCATToolTest.class, OurCDToolTest.class, OurCOPYToolTest.class, OurDELETEToolTest.class, 
+@SuiteClasses({OurShellTest.class,OurCATToolTest.class, OurCOPYToolTest.class, OurDELETEToolTest.class, 
 	OurMOVEToolTest.class, OurCOMMToolTest.class,
 	OurCUTToolTest.class, OurPASTEToolTest.class, OurSORTToolTest.class, OurUNIQToolTest.class, OurWCToolTest.class,
 	OurPIPINGToolTest.class, OurGREPToolTest.class, ShellIntegrationTest.class, 
