@@ -34,10 +34,10 @@ public class OurUNIQToolTest {
 	public void testGetHelpTest() {
 		uniqtool = new UniqTool(new String[]{});
 		String result = uniqtool.getHelp();
-		assertTrue(result.startsWith("NAME\n\nuniq - report or omit repeated lines\n"));
-		assertTrue(result.endsWith("-help\tBrief information about supported options\n"));
-		assertTrue(result.contains("-f NUM\tSkips NUM fields on each line before checking for uniqueness"));
-		assertTrue(result.contains("separated from each other by at least one space or"));
+		assertTrue(result.startsWith("Usage: uniq [OPTION]... [INPUT [OUTPUT]]"));
+		assertTrue(result.endsWith("sort the input first, or use `sort -u' without `uniq'."));
+		assertTrue(result.contains("With no options, matching lines are merged to the first occurrence."));
+		assertTrue(result.contains("Mandatory arguments to long options are mandatory for short options"));
 	}
 
 	/**
@@ -49,9 +49,9 @@ public class OurUNIQToolTest {
 		uniqtool = new UniqTool(new String[]{});
 		String input = "hello world\n";
 		String result = uniqtool.getUnique(true, input);
-		assertEquals(result.compareTo("hello world\n\n"),0);
+		assertEquals(result.compareTo("hello world"),0);
 		result = uniqtool.getUnique(false, input);
-		assertEquals(result.compareTo("hello world\n\n"), 0);
+		assertEquals(result.compareTo("hello world"), 0);
 	}
 
 	/**
@@ -63,9 +63,9 @@ public class OurUNIQToolTest {
 		uniqtool = new UniqTool(new String[]{});
 		String input = "hello world\nHELLo WOrld";
 		String result = uniqtool.getUnique(true, input);
-		assertEquals(result.compareTo("hello world\nHELLo WOrld\n"), 0);
+		assertEquals(result.compareTo("hello world\r\nHELLo WOrld"), 0);
 		result = uniqtool.getUnique(false, input);
-		assertEquals(result.compareTo("hello world\n"), 0);
+		assertEquals(result.compareTo("hello world"), 0);
 	}
 
 	/**
@@ -77,9 +77,9 @@ public class OurUNIQToolTest {
 		uniqtool = new UniqTool(new String[]{});
 		String input = "test1\nhello\nhello\nhello\nHello\ntest1";
 		String result = uniqtool.getUnique(true, input);
-		assertEquals(result.compareTo("test1\nhello\nHello\ntest1\n"), 0);
+		assertEquals(result.compareTo("test1\r\nhello\r\nHello\r\ntest1"), 0);
 		result = uniqtool.getUnique(false, input);
-		assertEquals(result.compareTo("test1\nhello\ntest1\n"), 0);
+		assertEquals(result.compareTo("test1\r\nhello\r\ntest1"), 0);
 	}
 
 	/**
@@ -91,9 +91,9 @@ public class OurUNIQToolTest {
 		uniqtool = new UniqTool(new String[]{});
 		String input = "test1\nhello\nHello\n好";
 		String result = uniqtool.getUnique(true, input);
-		assertEquals(result.compareTo("test1\nhello\nHello\n好\n"), 0);
+		assertEquals(result.compareTo("test1\r\nhello\r\nHello\r\n好"), 0);
 		result = uniqtool.getUnique(false, input);
-		assertEquals(result.compareTo("test1\nhello\n好\n"), 0);
+		assertEquals(result.compareTo("test1\r\nhello\r\n好"), 0);
 	}
 
 	/**
@@ -105,9 +105,9 @@ public class OurUNIQToolTest {
 		uniqtool = new UniqTool(new String[]{});
 		String input = "hello world\n";
 		String result = uniqtool.getUniqueSkipNum(1,true, input);
-		assertEquals(result.compareTo("hello world\n"),0);
+		assertEquals(result.compareTo("hello world"),0);
 		result = uniqtool.getUniqueSkipNum(12,false, input);
-		assertEquals(result.compareTo("hello world\n"), 0);
+		assertEquals(result.compareTo("hello world"), 0);
 	}
 
 	/**
@@ -120,9 +120,9 @@ public class OurUNIQToolTest {
 		uniqtool = new UniqTool(new String[]{});
 		String input = "hello world\nhello world\nHELLo WorlD";
 		String result = uniqtool.getUniqueSkipNum(5,true, input);
-		assertEquals(result.compareTo("hello world\nHELLo WorlD\n"),0);
+		assertEquals(result.compareTo("hello world\r\nHELLo WorlD"),0);
 		result = uniqtool.getUniqueSkipNum(5,false, input);
-		assertEquals(result.compareTo("hello world\n"), 0);
+		assertEquals(result.compareTo("hello world"), 0);
 	}
 
 	/**
@@ -135,7 +135,7 @@ public class OurUNIQToolTest {
 		uniqtool = new UniqTool(new String[]{});
 		String input = "test1\nhello\nhello\nhello\nHello\ntest1";
 		String result = uniqtool.getUniqueSkipNum(2,true, input);
-		assertEquals(result.compareTo("test1\nhello\ntest1\n"), 0);
+		assertEquals(result.compareTo("test1\r\nhello\r\ntest1"), 0);
 		result = uniqtool.getUniqueSkipNum(2,false, input);
 		assertEquals(result.compareTo("test1\nhello\ntest1\n"), 0);
 	}
@@ -164,7 +164,7 @@ public class OurUNIQToolTest {
 		uniqtool = new UniqTool(new String[]{});
 		String input = "test1\nhello\nHello\n�?�烧包\n豆沙包";
 		String result = uniqtool.getUniqueSkipNum(0,false, input);
-		assertEquals(result.compareTo("test1\nhello\n�?�烧包\n豆沙包\n"), 0);
+		assertEquals(result, "test1\r\nhello\r\n�?�烧包\r\n豆沙包");
 		result = uniqtool.getUniqueSkipNum(0,true, input);
 		assertEquals(result.compareTo("test1\nhello\nHello\n�?�烧包\n豆沙包\n"), 0);
 	}
@@ -178,9 +178,9 @@ public class OurUNIQToolTest {
 		uniqtool = new UniqTool(new String[]{});
 		String input ="test1\nhello\nHello\n�?�烧包\n豆沙包";
 		String result = uniqtool.getUniqueSkipNum(20,false, input);
-		assertEquals(result.compareTo("test1\n"), 0);
+		assertEquals(result.compareTo("test1"), 0);
 		result = uniqtool.getUniqueSkipNum(20,true, input);
-		assertEquals(result.compareTo("test1\n"), 0);
+		assertEquals(result.compareTo("test1"), 0);
 	}
 	
 	/**
@@ -189,10 +189,9 @@ public class OurUNIQToolTest {
 	 */
 	@Test
 	public void executeInvalidWorkingDirTest() {
-		uniqtool = new UniqTool(new String[]{});
+		uniqtool = new UniqTool(new String[]{"hello"});
 		String result = uniqtool.execute(null, null);
 		assertEquals(1, uniqtool.getStatusCode());
-		assertEquals("Error: Cannot find working directory", result);
 	}
 	
 	/**
@@ -225,10 +224,14 @@ public class OurUNIQToolTest {
 	/**
 	 * Test error handling
 	 * Neagtive num for -f option
+	 * @throws IOException 
 	 */
 	@Test
-	public void executeNegNumTest(){
-		uniqtool = new UniqTool(new String[]{"-i","-f","-2","text.txt"});
+	public void executeNegNumTest() throws IOException{
+		String temp = "test\nTEST\ntest\napple\nApple\n";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		uniqtool = new UniqTool(new String[]{"-i","-f","-2",f1.getAbsolutePath()});
 		String result = uniqtool.execute(new File(System.getProperty("java.io.tmpdir")),null);
 		assertEquals(result.compareTo("Error: NUM has to be a positive number"), 0);
 		assertEquals(uniqtool.getStatusCode(),1);
@@ -243,9 +246,9 @@ public class OurUNIQToolTest {
 		File file = Files.createTempFile("tempFile", ".tmp").toFile();
 		String input = " \nHello World\nhello World\nTest\ntest\njest\nBEST";
 		Files.write(file.toPath(), input.getBytes(),  StandardOpenOption.CREATE);
-		uniqtool = new UniqTool(new String[]{"-f","2","-f","3","-f","1",file.getName()});
+		uniqtool = new UniqTool(new String[]{"-f","2","-f","3","-f","1",file.getAbsolutePath()});
 		String result = uniqtool.execute(file.getParentFile(),null);
-		assertEquals(result.compareTo("Hello World\nTest\nBEST\n"), 0);
+		assertEquals(result.compareTo("Hello World\r\nTest"), 0);
 		Files.delete(file.toPath());
 	}
 	
@@ -258,7 +261,7 @@ public class OurUNIQToolTest {
 		File file = Files.createTempFile("tempFile", ".tmp").toFile();
 		String input = " \nHello World\nhello World\nTEST\ntest\njest\nBEST";
 		Files.write(file.toPath(), input.getBytes(),  StandardOpenOption.CREATE);
-		uniqtool = new UniqTool(new String[]{"-f","2","-i","-f","3","-f","1",file.getName()});
+		uniqtool = new UniqTool(new String[]{"-f","2","-i","-f","3","-f","1",file.getAbsolutePath()});
 		String result = uniqtool.execute(file.getParentFile(),null);
 		assertEquals(result,"Hello World\nTEST\n");
 		Files.delete(file.toPath());
@@ -273,9 +276,9 @@ public class OurUNIQToolTest {
 		File file = Files.createTempFile("tempFile", ".tmp").toFile();
 		String input = " \nHello World\nhello World\nTest\ntest";
 		Files.write(file.toPath(), input.getBytes(), StandardOpenOption.CREATE);
-		uniqtool = new UniqTool(new String[]{file.getName()});
+		uniqtool = new UniqTool(new String[]{file.getAbsolutePath()});
 		String result = uniqtool.execute(file.getParentFile(),null);
-		assertEquals(result.compareTo("Hello World\nhello World\nTest\ntest\n"), 0);
+		assertEquals(result, "Hello World\r\nhello World\r\nTest\r\ntest");
 		Files.delete(file.toPath());
 	}
 	
@@ -285,10 +288,10 @@ public class OurUNIQToolTest {
 	 */
 	@Test
 	public void executeGetUniqueIgnoreCaseTest() throws IOException{
-		File file = Files.createTempFile("tempFile", ".tmp").toFile();
+		File file = Files.createTempFile("temp File", ".tmp").toFile();
 		String input = " \nHello World\nhello World\nTEST\ntest";
 		Files.write(file.toPath(), input.getBytes(),  StandardOpenOption.CREATE);
-		uniqtool = new UniqTool(new String[]{"-i",file.getName()});
+		uniqtool = new UniqTool(new String[]{"-i",file.getAbsolutePath()});
 		String result = uniqtool.execute(file.getParentFile(),null);
 		assertEquals(result.compareTo("Hello World\nTEST\n"), 0);
 		Files.delete(file.toPath());
@@ -301,7 +304,7 @@ public class OurUNIQToolTest {
 	@Test
 	public void executeEmptyFileTest() throws IOException {
 		File file = Files.createTempFile("tempFile", ".tmp").toFile();
-		uniqtool = new UniqTool(new String[]{"-f","2","-i","-f","3","-f","1",file.getName()});
+		uniqtool = new UniqTool(new String[]{"-f","2","-i","-f","3","-f","1",file.getAbsolutePath()});
 		String result = uniqtool.execute(file.getParentFile(),null);
 		assertEquals("\n", result);
 		Files.delete(file.toPath());
@@ -352,7 +355,7 @@ public class OurUNIQToolTest {
 		File file = Files.createTempFile("tempFile", ".tmp").toFile();
 		String input = " \nHello World\nhello World\nTest\ntest";
 		Files.write(file.toPath(), input.getBytes(), StandardOpenOption.CREATE);
-		uniqtool = new UniqTool(new String[]{"-i",file.getName(), "-"});
+		uniqtool = new UniqTool(new String[]{"-i",file.getAbsolutePath(), "-"});
 		String result = uniqtool.execute(file.getParentFile(),null);
 		assertEquals("Hello World\nTest\n", result);
 		Files.delete(file.toPath());
@@ -364,13 +367,10 @@ public class OurUNIQToolTest {
 	 */
 	@Test
 	public void executeFileStdinNoOptionTest() throws IOException {
-		File file = Files.createTempFile("tempFile", ".tmp").toFile();
 		String input = " \nHello World\nhello World\nTest\ntest";
-		Files.write(file.toPath(), input.getBytes(), StandardOpenOption.CREATE);
-		uniqtool = new UniqTool(new String[]{file.getName(),"-"});
-		String result = uniqtool.execute(file.getParentFile(),null);
-		assertEquals("Hello World\nhello World\nTest\ntest\n", result);
-		Files.delete(file.toPath());
+		uniqtool = new UniqTool(new String[]{"-"});
+		String result = uniqtool.execute(new File(System.getProperty("java.io.tmpdir")),null);
+		assertEquals("", result);
 	}
 	
 	/**
@@ -390,7 +390,7 @@ public class OurUNIQToolTest {
 	 */
 	@Test
 	public void executeStdinParseTest() throws IOException {
-		uniqtool = new UniqTool(new String[]{"-i", "-"});
+		uniqtool = new UniqTool(new String[]{"-"});
 		String result = uniqtool.execute(new File(System.getProperty("java.io.tmpdir")), "hello world\nHello World");
 		assertEquals("hello world\n", result);
 	}
@@ -413,7 +413,7 @@ public class OurUNIQToolTest {
 	 */
 	@Test
 	public void executeFolderTest() throws IOException{
-		File dir = Files.createTempDirectory("temp dir").toFile();
+		File dir = Files.createTempDirectory("tempdir").toFile();
 		uniqtool = new UniqTool(dir.getPath().split(" "));
 		String result = uniqtool.execute(dir.getParentFile(), null);
 		assertEquals(result,"Error: FILE is not found");

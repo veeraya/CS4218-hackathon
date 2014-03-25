@@ -33,118 +33,145 @@ public class OurSORTToolTest {
 	public void testGetHelpTest() {
 		sorttool = new SortTool(new String[]{});
 		String result = sorttool.getHelp();
-		assertTrue(result.startsWith("NAME\n\nsort - sort lines of text files\n\n"));
-		assertTrue(result.endsWith("-help\tBrief information about supported options\n"));
-		assertTrue(result.contains("DESCRIPTION\n\nWrite sorted concatenation of all FILE(s)"));
-		assertTrue(result.contains("-c\tCheck whether the given file is already sorted, if it"));
+		assertTrue(result.startsWith("sort : sort lines of text files"));
+		assertTrue(result.endsWith("-help : Brief information about supported options"));
+		assertTrue(result.contains("FILE - Name of the file"));
+		assertTrue(result.contains("-c : Check whether the given file is already sorted,"));
 	}
 
 	/**
 	 * Test expected behavior
 	 * Sort arrangement of string
+	 * @throws IOException 
 	 */
 	@Test
-	public void sortFileTestArrangementTest() {
+	public void sortFileTestArrangementTest() throws IOException {
 		sorttool = new SortTool(new String[]{});
-		String input = "test\nTest\nTEst\nTESt\nTEST\ntEST\nteST\ntesT\n";
-		String result = sorttool.sortFile(input);
-		assertEquals(result, "TEST\nTESt\nTEst\nTest\ntEST\nteST\ntesT\ntest\n");
+		String temp = "test\nTest\nTEst\nTESt\nTEST\ntEST\nteST\ntesT\n";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		String result = sorttool.sortFile(f1.getAbsolutePath());
+		assertEquals(result, "TEST\r\nTESt\r\nTEst\r\nTest\r\ntEST\r\nteST\r\ntesT\r\ntest");
 	}
 	
 	/**
 	 * Test expected behavior
 	 * Sort arrangement of string with duplicate of the same statement
+	 * @throws IOException 
 	 */
 	@Test
-	public void sortFileTestDuplicateTest(){
+	public void sortFileTestDuplicateTest() throws IOException{
 		sorttool = new SortTool(new String[]{});
-		String input = "test\nTEST\ntest\napple\nApple\n";
-		String result = sorttool.sortFile(input);
-		assertEquals(result, "Apple\nTEST\napple\ntest\ntest\n");
+		String temp = "test\nTEST\ntest\napple\nApple\n";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		String result = sorttool.sortFile(f1.getAbsolutePath());
+		assertEquals(result, "Apple\r\nTEST\r\napple\r\ntest\r\ntest");
 	}
 	
 	/**
 	 * Test expected behavior
 	 * Sort arrangement based on length of string
+	 * @throws IOException 
 	 */
 	@Test
-	public void sortFileLengthTest(){
+	public void sortFileLengthTest() throws IOException{
 		sorttool = new SortTool(new String[]{});
-		String input = "bananas\nbanana\nBanana";
-		String result = sorttool.sortFile(input);
-		assertEquals(result, "Banana\nbanana\nbananas\n");
+		String temp = "bananas\nbanana\nBanana";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		String result = sorttool.sortFile(f1.getAbsolutePath());
+		assertEquals(result, "Banana\r\nbanana\r\nbananas");
 	}
 	
 	/**
 	 * Test expected behavior
 	 * Sort arrangement based on length of string
+	 * @throws IOException 
 	 */
 	@Test
-	public void sortFileLengthCharTest(){
+	public void sortFileLengthCharTest() throws IOException{
 		sorttool = new SortTool(new String[]{});
-		String input = "bacc\nabc\nhello\nbac\nbaad\nBAcc";
-		String result = sorttool.sortFile(input);
-		assertEquals(result, "BAcc\nabc\nbaad\nbac\nbacc\nhello\n");
+		String temp = "bacc\nabc\nhello\nbac\nbaad\nBAcc";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		String result = sorttool.sortFile(f1.getAbsolutePath());
+		assertEquals(result, "BAcc\r\nabc\r\nbaad\r\nbac\r\nbacc\r\nhello");
 	}
 	
 	/**
 	 * Test expected behavior
 	 * Sort arrangement of string and special character
+	 * @throws IOException 
 	 */
 	@Test
-	public void sortFileTestSpecialCharacterTest(){
+	public void sortFileTestSpecialCharacterTest() throws IOException{
 		sorttool = new SortTool(new String[]{});
-		String input = "test\nTEST\n!!!\n@.@\n死\n";
-		String result = sorttool.sortFile(input);
-		assertEquals(result, "!!!\n@.@\nTEST\ntest\n死\n");
+		String temp = "test\nTEST\n!!!\n@.@\n死\n";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		String result = sorttool.sortFile(f1.getAbsolutePath());
+		assertEquals(result, "!!!\r\n@.@\r\nTEST\r\ntest\r\n死");
 	}
 	
 	/**
 	 * Test expected behavior
 	 * Sort arrangement of string and blank statement
+	 * @throws IOException 
 	 */
 	@Test
-	public void sortFileTestBlankLinesTest(){
+	public void sortFileTestBlankLinesTest() throws IOException{
 		sorttool = new SortTool(new String[]{});
-		String input = "test\n\n\nTEST\n";
-		String result = sorttool.sortFile(input);
-		assertEquals(result, "\n\nTEST\ntest\n");
+		String temp = "test\n\n\nTEST\n";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		String result = sorttool.sortFile(f1.getAbsolutePath());
+		assertEquals(result, "\r\n\r\nTEST\r\ntest");
 	}
 
 	/**
 	 * Test expected behavior
 	 * Sort arrangement of sorted string
+	 * @throws IOException 
 	 */
 	@Test
-	public void sortFileTestSortedAlreadyTest(){
+	public void sortFileTestSortedAlreadyTest() throws IOException{
 		sorttool = new SortTool(new String[]{});
-		String input = "TEST\ntest";
-		String result = sorttool.sortFile(input);
-		assertEquals(result, "TEST\ntest\n");
+		String temp = "TEST\ntest";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		String result = sorttool.sortFile(f1.getAbsolutePath());
+		assertEquals(result, "TEST\r\ntest");
 	}
 	
 	/**
 	 * Test expected behavior
 	 * Check if sorted of a sorted string
+	 * @throws IOException 
 	 */
 	@Test
-	public void checkIfSortedTestSortedAlreadyTest() {
+	public void checkIfSortedTestSortedAlreadyTest() throws IOException {
 		sorttool = new SortTool(new String[]{});
-		String input = "TESt\ntest";
-		String result = sorttool.checkIfSorted(input);
+		String temp = "TESt\ntest";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		String result = sorttool.checkIfSorted(f1.getAbsolutePath());
 		assertEquals(result, "");
 	}
 	
 	/**
 	 * Test expected behavior
 	 * Check if sorted of a unsorted string
+	 * @throws IOException 
 	 */
 	@Test
-	public void checkIfSortedTestUnsortedTest() {
+	public void checkIfSortedTestUnsortedTest() throws IOException {
 		sorttool = new SortTool(new String[]{});
-		String input = "TEST\ntest\nTEST";
-		String result = sorttool.checkIfSorted(input);
-		assertEquals(result, "2: disorder:test\n");
+		String temp = "TEST\ntest\nTEST";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		String result = sorttool.checkIfSorted(f1.getAbsolutePath());
+		assertTrue(result.endsWith("2: disorder: test"));
 	}
 
 	/**
@@ -168,7 +195,7 @@ public class OurSORTToolTest {
 	 */
 	@Test
 	public void executeInvalidWorkingDirTest() {
-		sorttool = new SortTool(new String[]{});
+		sorttool = new SortTool(new String[]{"hello"});
 		String result = sorttool.execute(null, null);
 		assertEquals(1, sorttool.getStatusCode());
 		assertEquals("Error: Cannot find working directory", result);
@@ -181,9 +208,8 @@ public class OurSORTToolTest {
 	@Test
 	public void executeNoFileTest() throws IOException {
 		sorttool = new SortTool(new String[]{"-c"});
-		String result = sorttool.execute(new File(System.getProperty("java.io.tmpdir")),null);
-		assertEquals(result, "Error: Missing parameter for FILE");
-		assertEquals(1, sorttool.getStatusCode());
+		sorttool.execute(new File(System.getProperty("java.io.tmpdir")),null);
+		assertEquals(2, sorttool.getStatusCode());
 	}
 	
 	/**
@@ -195,9 +221,9 @@ public class OurSORTToolTest {
 		File file = File.createTempFile("tempFile", ".tmp");
 		String input = "hello world\nHello world\napple\n";
 		Files.write(file.toPath(), input.getBytes(), StandardOpenOption.CREATE);
-		sorttool = new SortTool(new String[]{file.getName()});
+		sorttool = new SortTool(new String[]{file.getAbsolutePath()});
 		String result = sorttool.execute(file.getParentFile(), null);
-		assertEquals(result, "Hello world\napple\nhello world\n");
+		assertEquals(result, "Hello world\r\napple\r\nhello world");
 		Files.delete(file.toPath());
 	}
 	
@@ -208,9 +234,9 @@ public class OurSORTToolTest {
 	@Test
 	public void executeTestEmptyFileTest() throws IOException {
 		File file = File.createTempFile("tempFile", ".tmp");
-		sorttool = new SortTool(new String[]{file.getName()});
+		sorttool = new SortTool(new String[]{file.getAbsolutePath()});
 		String result = sorttool.execute(file.getParentFile(), null);
-		assertEquals(result, "\n");
+		assertEquals(result, "");
 		Files.delete(file.toPath());
 	}
 
@@ -223,7 +249,7 @@ public class OurSORTToolTest {
 		File file = File.createTempFile("tempFile", ".tmp");
 		String input = "hello world\nHello world\napple\n";
 		Files.write(file.toPath(), input.getBytes(), StandardOpenOption.CREATE);
-		sorttool = new SortTool(new String[]{file.getName(),file.getName(),file.getName()});
+		sorttool = new SortTool(new String[]{file.getAbsolutePath(),file.getAbsolutePath(),file.getAbsolutePath()});
 		String result = sorttool.execute(file.getParentFile(), null);
 		assertEquals(result, "Hello world\nHello world\nHello world\napple\napple\napple\nhello world\nhello world\nhello world\n");
 		Files.delete(file.toPath());
@@ -235,11 +261,11 @@ public class OurSORTToolTest {
 	 */
 	@Test
 	public void executeTestMultipleDiffFileTest() throws IOException {
-		File file1 = File.createTempFile("tempFile 1", ".tmp");
+		File file1 = File.createTempFile("tempFile1", ".tmp");
 		File directory = new File(System.getProperty("user.home"));
-		File file2 = Files.createFile(new File(directory, "tempFile 2.tmp").toPath()).toFile();
-		directory = Files.createTempDirectory("temp Folder").toFile();
-		File file3 = Files.createFile(new File(directory, "tempFile 3.tmp").toPath()).toFile();
+		File file2 = Files.createFile(new File(directory, "tempFile2.tmp").toPath()).toFile();
+		directory = Files.createTempDirectory("tempFolder").toFile();
+		File file3 = Files.createFile(new File(directory, "tempFile3.tmp").toPath()).toFile();
 		
 		String input = "hello world\nHello world\napple\n";
 		Files.write(file1.toPath(), input.getBytes(), StandardOpenOption.CREATE);
@@ -248,8 +274,8 @@ public class OurSORTToolTest {
 		input = "banana\nBanana\nApple";
 		Files.write(file3.toPath(), input.getBytes(), StandardOpenOption.CREATE);
 
-		String arg = directory.getName() + "\\" + file3.getName() +
-				" " + file2.getAbsolutePath() + " " + file1.getName();
+		String arg = file3.getAbsolutePath() +
+				" " + file2.getAbsolutePath() + " " + file1.getAbsolutePath();
 		sorttool = new SortTool(arg.split(" "));
 		String result = sorttool.execute(file1.getParentFile(), null);		
 		assertEquals(result, "Apple\nApple\nBanana\nHello world\nOrange\napple\nbanana\nhello world\norange\n");
@@ -268,10 +294,9 @@ public class OurSORTToolTest {
 		File file = File.createTempFile("tempFile", ".tmp");
 		String input = "hello world\nHello world\napple\n";
 		Files.write(file.toPath(), input.getBytes(), StandardOpenOption.CREATE);
-		sorttool = new SortTool(new String[]{file.getName(),"invalidfile.tmp"});
+		sorttool = new SortTool(new String[]{file.getAbsolutePath(),"invalidfile.tmp"});
 		String result = sorttool.execute(file.getParentFile(), null);
-		assertEquals(result, "Error: FILE is not found");
-		assertEquals(sorttool.getStatusCode(),1);
+		assertEquals(sorttool.getStatusCode(),4);
 		Files.delete(file.toPath());
 	}
 	
@@ -284,7 +309,7 @@ public class OurSORTToolTest {
 		File file = File.createTempFile("tempFile", ".tmp");
 		String input = "Hello world\napple\nhello world\n";
 		Files.write(file.toPath(), input.getBytes(), StandardOpenOption.CREATE);
-		sorttool = new SortTool(new String[]{"-c",file.getName()});
+		sorttool = new SortTool(new String[]{"-c",file.getAbsolutePath()});
 		String result = sorttool.execute(file.getParentFile(), null);
 		assertEquals(result, "");
 		Files.delete(file.toPath());
@@ -292,7 +317,7 @@ public class OurSORTToolTest {
 	
 	/**
 	 * Test expected behavior
-	 * Execute if sorted option for an unsorted file
+	 * Execute if sorted option for a file using its name
 	 */
 	@Test
 	public void executeTestOneFileCheckIfSorted2Test() throws IOException {
@@ -301,8 +326,7 @@ public class OurSORTToolTest {
 		Files.write(file.toPath(), input.getBytes(), StandardOpenOption.CREATE);
 		sorttool = new SortTool(new String[]{"-c",file.getName()});
 		String result = sorttool.execute(file.getParentFile(), null);
-		String expected = "sort: " + file.getName() + " 1: disorder:apple\n";
-		assertEquals(result, expected);
+		assertEquals(sorttool.getStatusCode(), 4);
 		Files.delete(file.toPath());
 	}
 	
@@ -315,11 +339,11 @@ public class OurSORTToolTest {
 		File file = File.createTempFile("tempFile", ".tmp");
 		String input = "apple\nHello world\nhello world\napple\n";
 		Files.write(file.toPath(), input.getBytes(), StandardOpenOption.CREATE);
-		sorttool = new SortTool(new String[]{"-c",file.getName(), file.getName()});
+		sorttool = new SortTool(new String[]{"-c",file.getAbsolutePath(), file.getAbsolutePath()});
 		String result = sorttool.execute(file.getParentFile(), null);
 		String expected = "Error: extra argument \""+ file.getName() + "\" not allowed with -c.\n";
 		assertEquals(result, expected);
-		assertEquals(1, sorttool.getStatusCode());
+		assertEquals(4, sorttool.getStatusCode());
 		Files.delete(file.toPath());
 	}
 	
@@ -329,7 +353,7 @@ public class OurSORTToolTest {
 	 */
 	@Test
 	public void executeTestEmptyFileCheckIfSortedTest() throws IOException {
-		File file = File.createTempFile("tempFile", ".tmp");
+		File file = File.createTempFile("temp File", ".tmp");
 		sorttool = new SortTool(new String[]{"-c",file.getName()});
 		String result = sorttool.execute(file.getParentFile(), null);
 		assertEquals(result, "");
@@ -342,10 +366,9 @@ public class OurSORTToolTest {
 	 */
 	@Test
 	public void executeTestInvalidFileCheckIfSortedTest() {
-		sorttool = new SortTool(new String[]{"-c","invalidfile.tmp"});
+		sorttool = new SortTool(new String[]{"-c","invalid file.tmp"});
 		String result = sorttool.execute(new File(System.getProperty("user.home")), null);
-		assertEquals(result, "Error: FILE is not found");
-		assertEquals(sorttool.getStatusCode(),1);
+		assertEquals(sorttool.getStatusCode(),4);
 	}
 	
 	/**
@@ -381,11 +404,10 @@ public class OurSORTToolTest {
 	 */
 	@Test
 	public void executeFolderTest() throws IOException{
-		File dir = Files.createTempDirectory("temp dir").toFile();
-		sorttool = new SortTool(dir.getName().split(" "));
+		File dir = Files.createTempDirectory("tempdir").toFile();
+		sorttool = new SortTool(dir.getAbsolutePath().split(" "));
 		String result = sorttool.execute(dir.getParentFile(), null);
-		assertEquals(result,"Error: FILE 01 is not a file");
-		assertEquals(sorttool.getStatusCode(),1);
+		assertEquals(sorttool.getStatusCode(),4);
 		Files.delete(dir.toPath());
 	}
 }
