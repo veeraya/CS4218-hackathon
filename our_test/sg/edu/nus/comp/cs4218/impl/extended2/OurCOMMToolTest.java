@@ -34,139 +34,202 @@ public class OurCOMMToolTest {
 	public void testGetHelp() {
 		commtool = new CommTool(new String[]{});
 		String result = commtool.getHelp();
-		assertTrue(result.startsWith("NAME\n\ncomm - compare two sorted files line by line\n\n"));
-		assertTrue(result.endsWith("-help\tBrief information about supported options\n"));
-		assertTrue(result.contains("FILE1\tName of the file 1\nFILE2\tName of the file 2\n\n"));
-		assertTrue(result.contains("no options, produce three-column output. Col"));
+		assertTrue(result.startsWith("comm : Compares two sorted files line by line. With no options"));
+		assertTrue(result.endsWith("-help : Brief information about supported options"));
+		assertTrue(result.contains("FILE1 - Name of the file 1"));
+		assertTrue(result.contains("-c : check that the input is correctly sorted, even if"));
 	}
 
 	/**
 	 * Test expected behavior
 	 * Compare between two string that is not equal in length
+	 * @throws IOException 
 	 */
 	@Test
-	public void compareFilesUnequalListTest() {
+	public void compareFilesUnequalListTest() throws IOException {
 		commtool = new CommTool(new String[]{});
-		String input1 = "hello world\nthis is a test\nfile\nabc";
-		String input2 = "baby\nhello world\nfinal";
-		String expected = "\t\tbaby\n\t\t\t\thello world\ncomm: file 2 is not in sorted order\n\t\tfinal\nthis is a test\ncomm: file 1 is not in sorted order\nfile\nabc\n";
-		String result = commtool.compareFiles(input1, input2);
-		assertEquals(expected.compareTo(result),0);
+		String temp = "hello world\nthis is a test\nfile\nabc";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		temp = "baby\nhello world\nfinal";
+		File f2 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f2.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		String expected = "\tbaby\r\n\t\thello world\r\ncomm: file 2 is not in sorted order\r\n\tfinal\r\nthis is a test\r\ncomm: file 1 is not in sorted order\r\nfile\r\nabc\r\n";
+		String result = commtool.compareFiles(f1.getAbsolutePath(), f2.getAbsolutePath());
+		assertEquals(expected,result);
+		Files.delete(f1.toPath());
+		Files.delete(f2.toPath());
 	}
 
 	/**
 	 * Test expected behavior
 	 * Compare between two string. One of the string is sorted
+	 * @throws IOException 
 	 */
 	@Test
-	public void compareFilesCheckSortStatusUnequalListTest() {
+	public void compareFilesCheckSortStatusUnequalListTest() throws IOException {
 		commtool = new CommTool(new String[]{});
-		String input1 = "hello world\nthis is a test\nfile\nabc";
-		String input2 = "baby\nhello world\nfinal";
-		String expected = "\t\tbaby\n\t\t\t\thello world\ncomm: file 2 is not in sorted order\n";
-		String result = commtool.compareFilesCheckSortStatus(input1, input2);
-		assertEquals(expected.compareTo(result),0);
+		String temp = "hello world\nthis is a test\nfile\nabc";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		temp = "baby\nhello world\nfinal";
+		File f2 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f2.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		String expected = "\tbaby\r\n\t\thello world\r\ncomm: file 2 is not in sorted order\r\n";
+		String result = commtool.compareFilesCheckSortStatus(f1.getAbsolutePath(), f2.getAbsolutePath());
+		assertEquals(expected, result);
+		Files.delete(f1.toPath());
+		Files.delete(f2.toPath());
 	}
 
 	/**
 	 * Test expected behavior
 	 * Compare two string without checking sort status
+	 * @throws IOException 
 	 */
 	@Test
-	public void compareFilesDoNotCheckSortStatusUnequalListTest() {
+	public void compareFilesDoNotCheckSortStatusUnequalListTest() throws IOException {
 		commtool = new CommTool(new String[]{});
-		String input1 = "hello world\nthis is a test\nfile\nabc";
-		String input2 = "baby\nhello world\nfinal";
-		String expected = "\t\tbaby\n\t\t\t\thello world\n\t\tfinal\nthis is a test\nfile\nabc\n";
-		String result = commtool.compareFilesDoNotCheckSortStatus(input1, input2);
-		assertEquals(expected.compareTo(result),0);
+		String temp = "hello world\nthis is a test\nfile\nabc";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		temp = "baby\nhello world\nfinal";
+		File f2 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f2.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		String expected = "\tbaby\r\n\t\thello world\r\n\tfinal\r\nthis is a test\r\nfile\r\nabc\r\n";
+		String result = commtool.compareFilesDoNotCheckSortStatus(f1.getAbsolutePath(), f2.getAbsolutePath());
+		assertEquals(expected,result);
+		Files.delete(f1.toPath());
+		Files.delete(f2.toPath());
 	}
 
 	/**
 	 * Test expected behavior
 	 * Compare two string. One string is empty.
+	 * @throws IOException 
 	 */
 	@Test
-	public void compareFilesOneEmptyListTest() {
+	public void compareFilesOneEmptyListTest() throws IOException {
 		commtool = new CommTool(new String[]{});
-		String input1 = "";
-		String input2 = "baby\nhello world\nfinal";
+		String temp = "";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		temp = "baby\nhello world\nfinal";
+		File f2 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f2.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
 		String expected = "\t\tbaby\n\t\thello world\ncomm: file 2 is not in sorted order\n\t\tfinal\n";
-		String result = commtool.compareFiles(input1, input2);
-		assertEquals(expected.compareTo(result),0);
+		String result = commtool.compareFiles(f1.getAbsolutePath(), f2.getAbsolutePath());
+		assertEquals(expected,result);
+		Files.delete(f1.toPath());
+		Files.delete(f2.toPath());
 	}
 
 
 	/**
 	 * Test expected behavior
 	 * Compare two string check sort status. One string is empty.
+	 * @throws IOException 
 	 */
 	@Test
-	public void compareFilesCheckSortStatusOneEmptyListTest() {
+	public void compareFilesCheckSortStatusOneEmptyListTest() throws IOException {
 		commtool = new CommTool(new String[]{});
-		String input1 = "";
-		String input2 = "baby\nhello world\nfinal";
+		String temp = "";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		temp = "baby\nhello world\nfinal";
+		File f2 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f2.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
 		String expected = "\t\tbaby\n\t\thello world\ncomm: file 2 is not in sorted order\n";
-		String result = commtool.compareFilesCheckSortStatus(input1, input2);
-		assertEquals(expected.compareTo(result),0);
+		String result = commtool.compareFilesCheckSortStatus(f1.getAbsolutePath(), f2.getAbsolutePath());
+		assertEquals(expected, result);
+		Files.delete(f1.toPath());
+		Files.delete(f2.toPath());
 	}
 
 
 	/**
 	 * Test expected behavior
 	 * Compare two string without checking sort status. one string is empty
+	 * @throws IOException 
 	 */
 	@Test
-	public void compareFilesDoNotCheckSortStatusOneEmptyListTest() {
+	public void compareFilesDoNotCheckSortStatusOneEmptyListTest() throws IOException {
 		commtool = new CommTool(new String[]{});
-		String input1 = "";
-		String input2 = "baby\nhello world\nfinal";
-		String expected = "\t\tbaby\n\t\thello world\n\t\tfinal\n";
-		String result = commtool.compareFilesDoNotCheckSortStatus(input1, input2);
-		assertEquals(expected.compareTo(result),0);
+		String temp = "";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		temp = "baby\nhello world\nfinal";
+		File f2 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f2.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		String expected = "\tbaby\r\n\thello world\r\n\tfinal\r\n";
+		String result = commtool.compareFilesDoNotCheckSortStatus(f1.getAbsolutePath(), f2.getAbsolutePath());
+		assertEquals(expected, result);
+		Files.delete(f1.toPath());
+		Files.delete(f2.toPath());
 	}
 	
 
 	/**
 	 * Test expected behavior
 	 * Compare two string and both string are empty
+	 * @throws IOException 
 	 */
 	@Test
-	public void compareFilesTwoEmptyListTest() {
+	public void compareFilesTwoEmptyListTest() throws IOException {
 		commtool = new CommTool(new String[]{});
-		String input1 = "";
-		String input2 = "";
+		String temp = "";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		temp = "";
+		File f2 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f2.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
 		String expected = "";
-		String result = commtool.compareFiles(input1, input2);
-		assertEquals(expected.compareTo(result),0);
+		String result = commtool.compareFiles(f1.getAbsolutePath(), f2.getAbsolutePath());
+		assertEquals(expected, result);
+		Files.delete(f1.toPath());
+		Files.delete(f2.toPath());
 	}
 
 	/**
 	 * Test expected behavior
 	 * Compare two string checking sort status. Both string are empty
+	 * @throws IOException 
 	 */
 	@Test
-	public void compareFilesCheckSortStatusTwoEmptyListTest() {
+	public void compareFilesCheckSortStatusTwoEmptyListTest() throws IOException {
 		commtool = new CommTool(new String[]{});
-		String input1 = "";
-		String input2 = "";
+		String temp = "";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		temp = "";
+		File f2 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f2.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
 		String expected = "";
-		String result = commtool.compareFilesCheckSortStatus(input1, input2);
-		assertEquals(expected.compareTo(result),0);
+		String result = commtool.compareFilesCheckSortStatus(f1.getAbsolutePath(), f2.getAbsolutePath());
+		assertEquals(expected, result);
+		Files.delete(f1.toPath());
+		Files.delete(f2.toPath());
 	}
 
 	/**
 	 * Test expected behavior
 	 * Compare two string without checking sort status. Both string are empty
+	 * @throws IOException 
 	 */
 	@Test
-	public void compareFilesDoNotCheckSortStatusTwoEmptyListTest() {
+	public void compareFilesDoNotCheckSortStatusTwoEmptyListTest() throws IOException {
 		commtool = new CommTool(new String[]{});
-		String input1 = "";
-		String input2 = "";
+		String temp = "";
+		File f1 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
+		temp = "";
+		File f2 = Files.createTempFile("temp", ".tmp").toFile();
+		Files.write(f2.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
 		String expected = "";
-		String result = commtool.compareFilesDoNotCheckSortStatus(input1, input2);
-		assertEquals(expected.compareTo(result),0);
+		String result = commtool.compareFilesDoNotCheckSortStatus(f1.getAbsolutePath(), f2.getAbsolutePath());
+		assertEquals(expected, result);
+		Files.delete(f1.toPath());
+		Files.delete(f2.toPath());
 	}
 
 	/**
@@ -175,10 +238,9 @@ public class OurCOMMToolTest {
 	 */
 	@Test
 	public void executeInvalidWorkingDirTest() {
-		commtool = new CommTool(new String[]{});
-		String result = commtool.execute(null, null);
-		assertEquals(1, commtool.getStatusCode());
-		assertEquals("Error: Cannot find working directory", result);
+		commtool = new CommTool(new String[]{"hello","world"});
+		commtool.execute(null, null);
+		assertEquals(4, commtool.getStatusCode());
 	}
 
 	/**
@@ -188,9 +250,8 @@ public class OurCOMMToolTest {
 	@Test
 	public void executeNoArgsTest() {
 		commtool = new CommTool(new String[]{});
-		String result = commtool.execute(new File(System.getProperty("java.io.tmpdir")), null);
-		assertEquals(1, commtool.getStatusCode());
-		assertEquals("Error: Missing parameter for FILE 1 FILE 2", result);
+		commtool.execute(new File(System.getProperty("java.io.tmpdir")), null);
+		assertEquals(2, commtool.getStatusCode());
 	}
 
 	/**
@@ -201,9 +262,8 @@ public class OurCOMMToolTest {
 	public void executeIncompleteArgsTest() throws IOException{
 		File file = Files.createTempFile("tempFile", ".tmp").toFile();
 		commtool = new CommTool(new String[]{file.getName()});
-		String result = commtool.execute(new File(System.getProperty("java.io.tmpdir")), null);
-		assertEquals(1, commtool.getStatusCode());
-		assertEquals( "Error: Missing parameter for FILE 2", result);
+		commtool.execute(new File(System.getProperty("java.io.tmpdir")), null);
+		assertEquals(2, commtool.getStatusCode());
 		Files.delete(file.toPath());
 	}
 
@@ -220,8 +280,8 @@ public class OurCOMMToolTest {
 		Files.write(file1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
 		temp = "baby\nhello world";
 		Files.write(file2.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
-		temp = "\t\tbaby\n\t\t\t\thello world\nthis is a test\ncomm: file 1 is not in sorted order\nfile\n";
-		commtool = new CommTool(new String[]{file1.getName(), file2.getName()});
+		temp = "\tbaby\r\n\t\thello world\r\nthis is a test\r\ncomm: file 1 is not in sorted order\r\nfile\r\n";
+		commtool = new CommTool(new String[]{file1.getAbsolutePath(), file2.getAbsolutePath()});
 		String result = commtool.execute(tempFolder, null);
 		assertEquals(temp.compareTo(result), 0);
 		Files.delete(file1.toPath());
@@ -242,8 +302,8 @@ public class OurCOMMToolTest {
 		Files.write(file1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
 		temp = "baby\nhello world";
 		Files.write(file2.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
-		temp = "\t\tbaby\n\t\t\t\thello world\nthis is a test\nfile\n";
-		commtool = new CommTool(new String[]{"-d", file1.getName(),file2.getName()});
+		temp = "\tbaby\r\n\t\thello world\r\nthis is a test\r\nfile\r\n";
+		commtool = new CommTool(new String[]{"-d", file1.getAbsolutePath(),file2.getAbsolutePath()});
 		String result = commtool.execute(tempFolder, null);
 		assertEquals(temp.compareTo(result), 0);
 		Files.delete(file1.toPath());
@@ -266,8 +326,8 @@ public class OurCOMMToolTest {
 		Files.write(file1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
 		temp = "baby\nhello world";
 		Files.write(file2.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
-		temp = "\t\tbaby\n\t\t\t\thello world\nthis is a test\ncomm: file 1 is not in sorted order\n";
-		commtool = new CommTool(new String[]{"-d","-c", file1.getName(),file2.getName()});
+		temp = "\tbaby\r\n\t\thello world\r\nthis is a test\r\ncomm: file 1 is not in sorted order\r\n";
+		commtool = new CommTool(new String[]{"-d","-c", file1.getAbsolutePath(),file2.getAbsolutePath()});
 		String result = commtool.execute(tempFolder, null);
 		assertEquals(temp.compareTo(result), 0);
 		Files.delete(file1.toPath());
@@ -286,10 +346,10 @@ public class OurCOMMToolTest {
 		//only have help in the option, no file names
 		commtool = new CommTool(new String[]{"-help"});
 		String result = commtool.execute(new File(System.getProperty("java.io.tmpdir")), null);
-		assertTrue(result.startsWith("NAME\n\ncomm - compare two sorted files line by line"));
-		assertTrue(result.endsWith("Brief information about supported options\n"));
-		assertTrue(result.contains("no options, produce three-column output."));
-		assertTrue(result.contains("file 1\nFILE2\tName of the file 2"));
+		assertTrue(result.startsWith("comm : Compares two sorted files line"));
+		assertTrue(result.endsWith("-help : Brief information about supported options"));
+		assertTrue(result.contains("FILE1 - Name of the file 1"));
+		assertTrue(result.contains("-c : check that the input is correctly"));
 	}
 
 	/**
@@ -307,10 +367,10 @@ public class OurCOMMToolTest {
 		Files.write(file2.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
 		commtool = new CommTool(new String[]{"-d","-c","-help", file1.getName(),file2.getName()});
 		String result = commtool.execute(tempFolder, null);
-		assertTrue(result.startsWith("NAME\n\ncomm - compare two sorted files line by line"));
-		assertTrue(result.endsWith("Brief information about supported options\n"));
-		assertTrue(result.contains("no options, produce three-column output."));
-		assertTrue(result.contains("file 1\nFILE2\tName of the file 2"));	
+		assertTrue(result.startsWith("comm : Compares two sorted files line"));
+		assertTrue(result.endsWith("-help : Brief information about supported options"));
+		assertTrue(result.contains("FILE1 - Name of the file 1"));
+		assertTrue(result.contains("-c : check that the input is correctly"));
 		Files.delete(file1.toPath());
 		Files.delete(file2.toPath());
 		Files.delete(tempFolder.toPath());
@@ -329,10 +389,10 @@ public class OurCOMMToolTest {
 		File file2 = Files.createFile(new File(tempFolder, "tempFile2.txt").toPath()).toFile();
 		String temp = "hello world\nthis is a test\nfile";
 		Files.write(file1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
-		commtool = new CommTool(new String[]{"-d","-c", file1.getName(),file2.getName()});
+		commtool = new CommTool(new String[]{"-d","-c", file1.getAbsolutePath(),file2.getAbsolutePath()});
 		String result = commtool.execute(tempFolder, null);
-		temp = "hello world\nthis is a test\ncomm: file 1 is not in sorted order\n";
-		assertTrue(result.equals(temp));
+		temp = "hello world\r\nthis is a test\r\ncomm: file 1 is not in sorted order\r\n";
+		assertEquals(result, temp);
 		Files.delete(file1.toPath());
 		Files.delete(file2.toPath());
 		Files.delete(tempFolder.toPath());
@@ -354,9 +414,9 @@ public class OurCOMMToolTest {
 		Files.write(file2.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
 		commtool = new CommTool(new String[]{"-d","-i","-c", file1.getName(),file2.getName()});
 		String result = commtool.execute(tempFolder, null);
-		temp = "Error: comm: unrecognized option '-i'\nTry 'comm -help' for more information.\n";
+		temp = "comm: unknown option -- i\r\nTry comm '-help' for more information";
 		assertEquals(commtool.getStatusCode(),1);
-		assertTrue(result.equals(temp));
+		assertEquals(result, temp);
 		Files.delete(file1.toPath());
 		Files.delete(file2.toPath());
 		Files.delete(tempFolder.toPath());
@@ -379,8 +439,8 @@ public class OurCOMMToolTest {
 		String args = "-d -c " + file1.getName() + " " + file2.getName();
 		commtool = new CommTool(args.split(" "));
 		String result = commtool.execute(tempFolder, null);
-		temp = "Error: FILE 1 is not found";
-		assertTrue(result.equals(temp));
+		temp = "comm: unknown option -- r\r\nTry comm '-help' for more information";
+		assertEquals(result, temp);
 		assertEquals(commtool.getStatusCode(),1);
 		Files.delete(file1.toPath());
 		Files.delete(file2.toPath());
@@ -401,11 +461,11 @@ public class OurCOMMToolTest {
 		Files.write(file1.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
 		temp = "baby\nhello world";
 		Files.write(file2.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
-		String args = "-d -c " + file1.getName() + " " + file2.getName() + "extra";
+		String args = "-d -c " + file1.getAbsolutePath() + " " + file2.getAbsolutePath() + "extra";
 		commtool = new CommTool(args.split(" "));
 		String result = commtool.execute(tempFolder, null);
-		temp = "Error: FILE 2 is not found";
-		assertTrue(result.equals(temp));
+		temp = "tempFile2.txtextra: No such file or directory";
+		assertTrue(result.contains(temp));
 		assertEquals(commtool.getStatusCode(),1);
 		Files.delete(file1.toPath());
 		Files.delete(file2.toPath());
@@ -429,7 +489,7 @@ public class OurCOMMToolTest {
 		String args = "-d -c " + file1.getName() + " " + file2.getName() + " extra";
 		commtool = new CommTool(args.split(" "));
 		String result = commtool.execute(tempFolder, null);
-		temp = "Error: Extra parameter found in FILE 2";
+		temp = "comm: extra operand 'extra'";
 		assertTrue(result.equals(temp));
 		assertEquals(commtool.getStatusCode(),1);
 		Files.delete(file1.toPath());
@@ -446,9 +506,9 @@ public class OurCOMMToolTest {
 		File file = Files.createTempFile("temp File", ".tmp").toFile();
 		String temp = "hello world\nthis is a test\nfile";
 		Files.write(file.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
-		commtool = new CommTool(new String[]{file.getName(),file.getName()});
+		commtool = new CommTool(new String[]{file.getAbsolutePath(),file.getAbsolutePath()});
 		String result = commtool.execute(file.getParentFile(), null);
-		String expected = "\t\t\t\thello world\n\t\t\t\tthis is a test\n\t\t\t\tfile\n";
+		String expected = "\t\thello world\r\n\t\tthis is a test\r\n\t\tfile\r\n";
 		assertEquals(result,expected);
 		Files.delete(file.toPath());
 	}
@@ -459,13 +519,13 @@ public class OurCOMMToolTest {
 	 */
 	@Test
 	public void executeSameFileNoCheckTest() throws IOException{
-		File file = Files.createTempFile("temp File", ".tmp").toFile();
+		File file = Files.createTempFile("tempFile", ".tmp").toFile();
 		String temp = "hello world\nthis is a test\nfile";
 		Files.write(file.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
-		String arg =  "-d " + file.getName() + " " + file.getName();
+		String arg =  "-d " + file.getAbsolutePath() + " " + file.getAbsolutePath();
 		commtool = new CommTool(arg.split(" "));
 		String result = commtool.execute(file.getParentFile(),null);
-		String expected = "\t\t\t\thello world\n\t\t\t\tthis is a test\n\t\t\t\tfile\n";
+		String expected = "\t\thello world\r\n\t\tthis is a test\r\n\t\tfile\r\n";
 		assertEquals(result,expected);
 		Files.delete(file.toPath());
 	}
@@ -476,13 +536,13 @@ public class OurCOMMToolTest {
 	 */
 	@Test
 	public void executeSameFileCheckTest() throws IOException{
-		File file = Files.createTempFile("temp File", ".tmp").toFile();
+		File file = Files.createTempFile("tempFile", ".tmp").toFile();
 		String temp = "hello world\nthis is a test\nfile";
 		Files.write(file.toPath(), temp.getBytes(), StandardOpenOption.CREATE);
-		String arg = "-c " + file.getName() + " " + file.getName();
+		String arg = "-c " + file.getAbsolutePath() + " " + file.getAbsolutePath();
 		commtool = new CommTool(arg.split(" "));
 		String result = commtool.execute(file.getParentFile(), null);
-		String expected = "\t\t\t\thello world\n\t\t\t\tthis is a test\ncomm: file 1 is not in sorted order\n";
+		String expected = "\t\thello world\r\n\t\tthis is a test\r\ncomm: file 1 is not in sorted order\r\n";
 		assertEquals(result,expected);
 		Files.delete(file.toPath());
 	}
@@ -493,8 +553,8 @@ public class OurCOMMToolTest {
 	 */
 	@Test
 	public void executeFolder1Test() throws IOException{
-		File dir = Files.createTempDirectory("temp dir").toFile();
-		String arg = "-c " + dir.getName() + " " + dir.getName();
+		File dir = Files.createTempDirectory("tempdir").toFile();
+		String arg = "-c " + dir.getAbsolutePath() + " " + dir.getAbsolutePath();
 		commtool = new CommTool(arg.split(" "));
 		String result = commtool.execute(dir.getParentFile(), null);
 		assertEquals(result,"Error: FILE 1 is not a file");
@@ -508,9 +568,9 @@ public class OurCOMMToolTest {
 	 */
 	@Test
 	public void executeFolder2Test() throws IOException{
-		File dir = Files.createTempDirectory("temp dir").toFile();
+		File dir = Files.createTempDirectory("tempdir").toFile();
 		File file = Files.createTempFile("tempFile", ".tmp").toFile();
-		String arg = "-c " + file.getAbsolutePath() + " " + dir.getName();
+		String arg = "-c " + file.getAbsolutePath() + " " + dir.getAbsolutePath();
 		commtool = new CommTool(arg.split(" "));
 		String result = commtool.execute(dir.getParentFile(), null);
 		assertEquals(result,"Error: FILE 2 is not a file");

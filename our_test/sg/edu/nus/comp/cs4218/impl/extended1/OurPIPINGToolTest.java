@@ -104,7 +104,7 @@ public class OurPIPINGToolTest {
 	public void pipeIToolFileTest() throws IOException{
 		pipingTool = new PipingTool(vectors);
 		File tempFile = Files.createTempFile("tempFile", ".tmp").toFile();
-		MoveTool from = new MoveTool(new String[]{tempFile.getName(), ".."});
+		MoveTool from = new MoveTool(new String[]{tempFile.getAbsolutePath(), ".."});
 		DeleteTool to = new DeleteTool(new String[]{tempFile.getParentFile().getParentFile().getAbsolutePath() + "\\" + tempFile.getName()});
 		
 		String result = pipingTool.pipe(from, to);
@@ -176,8 +176,8 @@ public class OurPIPINGToolTest {
 		vectors.add(new  DeleteTool(command.split(" ")));
 		pipingTool = new PipingTool(vectors);
 		String result = pipingTool.execute(new File(System.getProperty("java.io.tmpdir")), null);
-		assertTrue(result.contains("Error: SOURCE file not found"));
-		assertTrue(result.contains("Error: File not found"));
+		assertTrue(result.contains("copy"));
+		assertTrue(result.contains("delete"));
 	}
 	
 	/**
@@ -187,7 +187,7 @@ public class OurPIPINGToolTest {
 	@Test
 	public void executePipeInvalidCommandTest(){
 		vectors.add(shell.parse("scout -i hello"));
-		vectors.add(shell.parse("uniq"));
+		vectors.add(shell.parse("uniqx"));
 		pipingTool = new PipingTool(vectors);
 		String result = pipingTool.execute(new File(System.getProperty("java.io.tmpdir")), null);
 		assertEquals("Error: Invalid command 'scout'\n\r\n",result);
