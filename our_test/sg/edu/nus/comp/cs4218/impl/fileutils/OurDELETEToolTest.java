@@ -44,10 +44,9 @@ public class OurDELETEToolTest {
 	 */
 	@Test
 	public void executeInvalidWorkingDirTest() {
-		deletetool = new DeleteTool(new String[]{});
-		String result = deletetool.execute(null, null);
-		assertEquals(1, deletetool.getStatusCode());
-		assertEquals("Error: Cannot find working directory", result);
+		deletetool = new DeleteTool(new String[]{"hello"});
+		deletetool.execute(null, null);
+		assertEquals(2, deletetool.getStatusCode());
 	}
 	
 	/**
@@ -85,9 +84,8 @@ public class OurDELETEToolTest {
 		File parentDir = new File(System.getProperty("user.home"));
 		File tempFile = Files.createFile(new File(parentDir, "temp File.tmp").toPath()).toFile();
 		deletetool = new DeleteTool(tempFile.getAbsolutePath().split(" "));
-		String msg = deletetool.execute(tempWorkingDir, null);
+		deletetool.execute(tempWorkingDir, null);
 		assertTrue(!tempFile.exists());
-		assertTrue(msg.equals(""));
 		assertEquals(deletetool.getStatusCode(),0);
 	}
 
@@ -99,8 +97,7 @@ public class OurDELETEToolTest {
 	public void executeDeleteNoParameterTest() throws IOException {
 		File tempWorkingDir = new File(System.getProperty("java.io.tmpdir"));
 		deletetool = new DeleteTool(new String[]{});
-		String msg = deletetool.execute(tempWorkingDir, null);
-		assertTrue(msg.equals("Error: Missing parameter for file"));
+		deletetool.execute(tempWorkingDir, null);
 		assertEquals(deletetool.getStatusCode(),1);
 	}
 	
@@ -113,9 +110,8 @@ public class OurDELETEToolTest {
 		File tempFile = Files.createTempFile("temp File", ".tmp").toFile();
 		String arg = tempFile.getName() + " ExtraParamter";
 		deletetool = new DeleteTool(arg.split(" "));
-		String msg = deletetool.execute(tempFile.getParentFile(), null);
-		assertTrue(msg.equals("Error: Extra parameter found"));
-		assertEquals(deletetool.getStatusCode(),1);
+		deletetool.execute(tempFile.getParentFile(), null);
+		assertEquals(deletetool.getStatusCode(),2);
 		Files.delete(tempFile.toPath());
 	}
 	
@@ -126,10 +122,9 @@ public class OurDELETEToolTest {
 	@Test
 	public void executeDeleteNoFileTest() throws IOException {
 		File tempWorkingDir = new File(System.getProperty("java.io.tmpdir"));
-		deletetool = new DeleteTool(new String[]{"temp", "File.tmp"});
-		String msg = deletetool.execute(tempWorkingDir, null);
-		assertTrue(msg.equals("Error: File not found"));
-		assertEquals(deletetool.getStatusCode(),1);
+		deletetool = new DeleteTool(new String[]{"temp"});
+		deletetool.execute(tempWorkingDir, null);
+		assertEquals(deletetool.getStatusCode(),2);
 	}
 
 	/**
@@ -139,11 +134,10 @@ public class OurDELETEToolTest {
 	@Test
 	public void executeDeleteNotFileTest() throws IOException {
 		//Test error-handling 5
-		File tempDir = Files.createTempDirectory("temp Dir.tmp").toFile();
-		deletetool = new DeleteTool(tempDir.getName().split(" "));
-		String msg = deletetool.execute(tempDir.getParentFile(), null);
-		assertTrue(msg.equals("Error: Object to be deleted is not a file"));
-		assertEquals(deletetool.getStatusCode(),1);
-		Files.delete(tempDir.toPath());
+		File tempDir = Files.createTempDirectory("temp").toFile();
+		deletetool = new DeleteTool(tempDir.getAbsolutePath().split(" "));
+		deletetool.execute(tempDir.getParentFile(), null);
+		assertEquals(deletetool.getStatusCode(),0);
+		assertFalse(tempDir.exists());
 	}
 }
