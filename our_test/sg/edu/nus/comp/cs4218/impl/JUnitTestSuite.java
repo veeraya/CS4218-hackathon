@@ -12,11 +12,10 @@ import sg.edu.nus.comp.cs4218.impl.extended2.*;
  *Test suite to run all unit and integration test
  */
 @RunWith(Suite.class)
-@SuiteClasses({OurShellTest.class,OurCATToolTest.class, OurCOPYToolTest.class, OurDELETEToolTest.class, 
-	OurMOVEToolTest.class, OurCOMMToolTest.class,
-	OurCUTToolTest.class, OurPASTEToolTest.class, OurSORTToolTest.class, OurUNIQToolTest.class, OurWCToolTest.class,
-	OurPIPINGToolTest.class, OurGREPToolTest.class, ShellIntegrationTest.class, 
-	ShellMoreIntegrationTest.class, ShellFunctionalIntegrationTest.class, ShellErrorIntegrationTest.class})
+@SuiteClasses({OurCATToolTest.class, OurCOPYToolTest.class, OurDELETEToolTest.class, 
+	OurMOVEToolTest.class, OurCOMMToolTest.class, OurCUTToolTest.class, OurPASTEToolTest.class, 
+	OurSORTToolTest.class, OurUNIQToolTest.class, OurWCToolTest.class,
+	OurPIPINGToolTest.class, OurGREPToolTest.class, ShellFunctionalIntegrationTest.class})
 public class JUnitTestSuite {
  
 }
