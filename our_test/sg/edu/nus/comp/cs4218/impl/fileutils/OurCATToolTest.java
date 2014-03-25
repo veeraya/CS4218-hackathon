@@ -64,6 +64,7 @@ public class OurCATToolTest {
 		assertEquals("Error: Missing parameter",msg);
 	}
 	
+	//works fine with manual testing
 	@Test
 	public void executeOneFileTest() {
 		File tempWorkingDir = new File(System.getProperty("java.io.tmpdir"));
@@ -73,6 +74,7 @@ public class OurCATToolTest {
 		assertEquals(msg , testStr.toString());
 	}
 	
+	//works fine with manual testing
 	@Test
 	public void executeTwoFilesTest() throws IOException {
 		File tempFile2 = Files.createTempFile("tempFile2", ".tmp").toFile();
@@ -84,6 +86,7 @@ public class OurCATToolTest {
 		assertEquals(msg , testStr.toString()+testStr.toString());
 	}
 	
+	//cat tempFile.tmp > tempFile2.tmp
 	@Test
 	public void executeFromFileToOutputFileTest() throws IOException{
 		File tempFile2 = Files.createTempFile("tempFile2", ".tmp").toFile();
